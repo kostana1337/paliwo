@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kalkulator Kosztów Paliwa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+      color: white;
+    }
+    .card {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      padding: 40px;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.15);
+      animation: fadeIn 0.6s ease;
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .form-group { margin-bottom: 18px; }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #10b981;
+      color: white;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #059669;
+      transform: translateY(-2px);
+    }
+    .result {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(16,185,129,0.15);
+      text-align: center;
+      font-weight: 600;
+      display: none;
+      line-height: 1.6;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Kalkulator Kosztów Paliwa</h1>
+
+    <div class="form-group">
+      <label>Dystans (km)</label>
+      <input type="number" id="distance" min="0" step="1" value="500" />
+    </div>
+
+    <div class="form-group">
+      <label>Średnie spalanie (l/100km)</label>
+      <input type="number" id="consumption" min="0" step="0.01" value="7.50" />
+    </div>
+
+    <div class="form-group">
+      <label>Cena paliwa (zł/l)</label>
+      <input type="number" id="price" min="0" step="0.01" value="5.19" />
+    </div>
+
+    <div class="form-group">
+      <label>Liczba osób</label>
+      <input type="number" id="people" min="1" step="1" value="1" />
+    </div>
+
+    <button onclick="calculate()">Oblicz koszt</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function roundToTwo(num) {
+      return Math.round(num * 100) / 100;
+    }
+
+    function calculate() {
+      const distance = parseFloat(document.getElementById('distance').value);
+      const consumption = parseFloat(document.getElementById('consumption').value);
+      const price = parseFloat(document.getElementById('price').value);
+      const people = parseInt(document.getElementById('people').value);
+      const resultDiv = document.getElementById('result');
+
+      if (
+        distance < 0 || consumption < 0 || price < 0 ||
+        !distance || !consumption || !price ||
+        people < 1 || !people
+      ) {
+        resultDiv.style.display = 'block';
+        resultDiv.innerText = 'Wprowadź poprawne, nieujemne wartości.';
+        return;
+      }
+
+      const fixedConsumption = roundToTwo(consumption);
+      const fixedPrice = roundToTwo(price);
+
+      const fuelUsed = (distance / 100) * fixedConsumption;
+      const totalCost = fuelUsed * fixedPrice;
+      const costPerPerson = totalCost / people;
+
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = `
+        Zużycie paliwa: ${fuelUsed.toFixed(2)} l <br>
+        Całkowity koszt: ${totalCost.toFixed(2)} zł <br>
+        Koszt na osobę (${people} os.): ${costPerPerson.toFixed(2)} zł
+      `;
+    }
+  </script>
+</body>
+</html>
